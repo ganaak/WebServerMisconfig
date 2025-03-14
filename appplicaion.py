@@ -14,7 +14,7 @@ from urllib.parse import urlparse, parse_qs
 app = Flask(__name__)
 
 # Shodan API Key (replace with your actual key)
-SHODAN_API_KEY = 'AjeVRyUneMq8hLumqbo6YFJX2HziKJZo'
+SHODAN_API_KEY = 'your_shodan_api_key_here'
 api = shodan.Shodan(SHODAN_API_KEY)
 
 # Retry mechanism for requests
