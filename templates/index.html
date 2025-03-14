@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Misconfiguration Detection</title>
+    <style>
+        /* Reset and General Styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #1F1F1F;
+            color: #E0E0E0;
+            padding: 20px;
+            font-size: 18px; /* Increased base font size */
+        }
+
+        header {
+            background-color: #333;
+            color: #F39C12;
+            padding: 20px 0;
+            text-align: center;
+            font-size: 36px; /* Increased font size for header */
+            letter-spacing: 2px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.4);
+        }
+
+        nav {
+            background-color: #212121;
+            padding: 10px 0;
+            text-align: center;
+            margin-top: 20px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        nav a {
+            color: #ECF0F1;
+            text-decoration: none;
+            font-size: 20px;
+            padding: 12px 20px;
+            margin: 0 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        nav a:hover {
+            background-color: #F39C12;
+            color: #333;
+        }
+
+        .container {
+            margin-top: 30px;
+        }
+
+        /* Tab Content */
+        .tab-content {
+            display: none;
+        }
+
+        .active-tab {
+            display: block;
+        }
+
+        .form-container {
+            background-color: #2C3E50;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.3);
+            margin-bottom: 30px;
+        }
+
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            font-size: 18px;
+            margin-bottom: 10px;
+            font-weight: bold;
+            color: #F39C12;
+        }
+
+        input, select, button {
+            padding: 14px;
+            font-size: 18px;
+            margin-bottom: 20px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            width: 100%;
+            background-color: #34495E;
+            color: #ECF0F1;
+        }
+
+        input:focus, select:focus, button:focus {
+            outline: none;
+            border-color: #F39C12;
+        }
+
+        button {
+            background-color: #F39C12;
+            color: white;
+            cursor: pointer;
+            border: none;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #E67E22;
+        }
+
+        /* Results Styling */
+        .results, .exploit-results, .shodan-results {
+            background-color: #34495E;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
+            margin-top: 30px;
+        }
+
+        .results ul, .exploit-results pre, .shodan-results pre {
+            background-color: #2C3E50;
+            padding: 12px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            color: #BDC3C7;
+            font-size: 18px; /* Increased font size for results */
+        }
+
+        .results h3, .exploit-results h3, .shodan-results h3 {
+            color: #F39C12;
+            margin-bottom: 10px;
+            font-size: 24px; /* Increased font size for headings */
+        }
+
+        .results-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        .results-table th, .results-table td {
+            border: 1px solid #BDC3C7;
+            padding: 16px;
+            text-align: left;
+        }
+
+        .results-table th {
+            background-color: #F39C12;
+            color: white;
+        }
+
+        .results-table td {
+            background-color: #2C3E50;
+        }
+
+        .results-table tr:nth-child(even) td {
+            background-color: #34495E;
+        }
+
+        .results-table td:hover {
+            background-color: #E67E22;
+            color: white;
+        }
+
+        .icon {
+            font-size: 22px;
+            color: #F39C12;
+        }
+
+        /* Styling for Missing Security Headers */
+        .missing-headers {
+            list-style: none;
+            padding: 0;
+            margin-top: 10px;
+        }
+
+        .missing-headers li {
+            background-color: #E67E22;
+            color: white;
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        Misconfiguration Detection 
+    </header>
+
+    <!-- Navigation Bar with Tab Links -->
+    <nav>
+        <a href="javascript:void(0);" onclick="showTab('vulnerability-tab')">🔍 Scanner</a>
+        <a href="javascript:void(0);" onclick="showTab('exploit-tab')">💥 Exploit Search Tool</a>
+    </nav>
+
+    <div class="container">
+
+        <!-- Tab Content for Vulnerability Scanner -->
+        <div id="vulnerability-tab" class="tab-content active-tab">
+            <div class="form-container">
+                <form method="POST">
+                    <br>
+                    <label for="target_ip">Target IP Address:</label>
+                    <input type="text" id="target_ip" name="target_ip" required><br><br>
+
+                    <label for="web_url">Website URL (For Tests Cloud Vuln Directory):</label>
+                    <input type="text" id="web_url" name="web_url" required><br><br>
+
+                    <label for="wordlist">Select Wordlist for Directory Fuzzing:</label>
+                    <select id="wordlist" name="wordlist" required>
+                        <option value="seclists/Discovery/Web-Content/common.txt">common.txt</option>
+                        <option value="seclists/Discovery/Web-Content/raft-large-directories.txt">raft-large-directories.txt</option>
+                        <option value="seclists/Discovery/Web-Content/big.txt">big.txt</option>
+                        <option value="seclists/Discovery/Web-Content/medium.txt">medium.txt</option> 
+                        <option value="seclists/Discovery/Web-Content/CommonBackdoors-PHP.fuzz.txt">CommonBackdoors-PHP.fuzz.txt</option>
+                    </select><br><br>
+
+                    <button type="submit">Run Scan</button>
+                </form>
+            </div>
+
+            {% if results %}
+            <div class="results">
+                <h2>Scan Results</h2>
+
+                <!-- Open Ports Table -->
+                <h3>Open Ports and Services</h3>
+                <table class="results-table">
+                    <thead>
+                        <tr>
+                            <th>Port</th>
+                            <th>Service</th>
+                            <th>Version</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for port, service in results.service_versions.items() %}
+                        <tr>
+                            <td>{{ port }}</td>
+                            <td>{{ service.name }}</td>
+                            <td>{{ service.version }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+
+                <!-- XSS Vulnerability -->
+                <h3>Cross-Site Scripting (XSS) Vulnerability</h3>
+                <p>{{ 'Vulnerable' if results.xss else 'Not Vulnerable' }}</p>
+
+                <!-- Security Headers -->
+                <h3>Security Headers</h3>
+                <ul class="missing-headers">
+                    {% for header in results.missing_security_headers %}
+                        <li>{{ header }}</li>
+                    {% endfor %}
+                </ul>
+
+                <!-- Discovered Files -->
+                <h3>Discovered Files</h3>
+                <h4>200 OK:</h4>
+                <ul>
+                    {% for file in results.discovered_files['200_OK'] %}
+                    <li>{{ file }}</li>
+                    {% endfor %}
+                </ul>
+                <h4>301 Redirects:</h4>
+                <ul>
+                    {% for file in results.discovered_files['301_Redirect'] %}
+                    <li>{{ file }}</li>
+                    {% endfor %}
+                </ul>
+                <h4>Other Responses:</h4>
+                <ul>
+                    {% for file in results.discovered_files['Other'] %}
+                    <li>{{ file }}</li>
+                    {% endfor %}
+                </ul>
+
+                <!-- Target Exploit Suggestions -->
+                <div class="exploit-results">
+                    <h3>Target Vulnerability Exploit Suggestions</h3>
+                    <pre>{{ exploit_results }}</pre>
+                </div>
+            </div>
+
+            <!-- Shodan Results Section -->
+            <div class="shodan-results">
+                <h3>Cloud Based Vuls Shodan Results</h3>
+                <pre>{{ results.shodan_results }}</pre>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Tab Content for Exploit Search -->
+        <div id="exploit-tab" class="tab-content">
+            <div class="exploit-results">
+                <h3>Search for External Exploits</h3>
+                <label for="external_exploit_query">Enter Service and Version (e.g., Apache 2.4):</label>
+                <input type="text" id="external_exploit_query" name="exploit_query" required><br><br>
+                <button id="search-exploit-btn" onclick="searchExploit()">Search Exploits</button>
+
+                <div id="external-exploit-results">
+                    <!-- This will show external search results dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showTab(tabId) {
+            const tabs = document.querySelectorAll('.tab-content');
+            tabs.forEach(tab => tab.classList.remove('active-tab'));
+            document.getElementById(tabId).classList.add('active-tab');
+        }
+
+        function searchExploit() {
+            const query = document.getElementById('external_exploit_query').value;
+            const resultsDiv = document.getElementById('external-exploit-results');
+
+            fetch('/search_exploit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ query: query })
+            })
+            .then(response => response.json())
+            .then(data => {
+                resultsDiv.innerHTML = '<pre>' + data.exploit_results + '</pre>';
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>
+
+</body>
+</html>
